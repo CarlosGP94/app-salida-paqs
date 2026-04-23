@@ -8,6 +8,7 @@ import paths from './renderer/routes/paths';
 import React from 'react';
 import Home from './renderer/views/home/Home';
 import { DataProvider } from './renderer/contexts/DataContext';
+import MainLayout from './renderer/layouts/MainLayout';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -28,7 +29,9 @@ root.render(
           transition={Bounce}
         />
         <Routes>
-          <Route path={paths.home} element={<Home />} />
+            <Route path={paths.home} element={<MainLayout />}>
+             <Route path={paths.home} element={<Home />} />
+            </Route>
         </Routes>
       </DataProvider>
     </ThemeProvider>

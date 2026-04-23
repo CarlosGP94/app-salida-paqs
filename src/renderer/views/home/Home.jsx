@@ -1,12 +1,12 @@
 import { Box, Typography } from '@mui/material';
-import React from 'react';
+import React, { useContext } from 'react';
+import SalidaTuboForm from './components/Form';
+import Loading from '../Loading/Loading';
+import { DataContext } from '../../contexts/DataContext';
 
 const Home = () => {
-  return (
-    <Box>
-      <Typography>EN DESARROLLO</Typography>
-    </Box>
-  );
+  const { operarios, tiposCalidad, loading } = useContext(DataContext);
+  return loading ? <Loading /> : <SalidaTuboForm />;
 };
 
 export default Home;

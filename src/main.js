@@ -2,6 +2,14 @@ const { app, BrowserWindow } = require('electron');
 const path = require('path');
 const { default: database } = require('./db/database');
 const { default: dbRoutes } = require('./server/routes/db.route');
+const { default: operariosRoutes } = require('./server/routes/operarios.route');
+const {
+  default: tiposCalidadRoutes,
+} = require('./server/routes/tiposCalidad.route');
+const { default: tubosRoutes } = require('./server/routes/tubos.route');
+const {
+  default: salidasPaqRoutes,
+} = require('./server/routes/salidasPaq.route');
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 // eslint-disable-next-line global-require
@@ -44,16 +52,10 @@ app.on('ready', async () => {
 
   // Iniciar rutas del servidor
   dbRoutes();
-  actionsRoute();
-  tubosRoutes();
-  salidasPaqsRoutes();
   operariosRoutes();
-  maquinasRoutes();
-  bobinasRoutes();
   tiposCalidadRoutes();
-  fabricantesRoutes();
-  flejesRoutes();
-  planesRoutes();
+  tubosRoutes();
+  salidasPaqRoutes();
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common

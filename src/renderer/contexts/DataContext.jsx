@@ -1,13 +1,10 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useEffect, useState } from 'react';
 
 export const DataContext = createContext();
 
 export function DataProvider({ children }) {
   const [loading, setLoading] = useState(true);
-  const [fabricantes, setFabricantes] = useState([]);
   const [tiposCalidad, setTiposCalidad] = useState([]);
-  const [tiposTubos, setTiposTubos] = useState([]);
-  const [maquinas, setMaquinas] = useState([]);
   const [operarios, setOperarios] = useState([]);
 
   const loadOperarios = async () => {
@@ -33,49 +30,10 @@ export function DataProvider({ children }) {
     };
   };
 
-  const loadMaquinas = async () => {
-    const result = await window.api.maquinas.getAll();
-    return {
-      ...result,
-      data: result.data.map((row) => ({
-        ...row,
-      })),
-      total: result.data.length,
-    };
-  };
-
-  const loadTiposTubos = async () => {
-    const result = await window.api.tubos.getTiposTubos();
-    return {
-      ...result,
-      data: result.data.map((row) => ({
-        ...row,
-      })),
-      total: result.data.length,
-    };
-  };
-
-  const loadFabricantes = async () => {
-    const result = await window.api.fabricantes.getAll();
-    return {
-      ...result,
-      data: result.data.map((row) => ({
-        ...row,
-      })),
-      total: result.data.length,
-    };
-  };
-
   const loadData = async () => {
     try {
       const resultTiposCalidad = await loadTiposCalidad();
       setTiposCalidad(resultTiposCalidad.data);
-      const resultFabricantes = await loadFabricantes();
-      setFabricantes(resultFabricantes.data);
-      const resultTiposTubos = await loadTiposTubos();
-      setTiposTubos(resultTiposTubos.data);
-      const resultMaquinas = await loadMaquinas();
-      setMaquinas(resultMaquinas.data);
       const resultOperarios = await loadOperarios();
       setOperarios(resultOperarios.data);
     } catch (err) {
@@ -93,14 +51,8 @@ export function DataProvider({ children }) {
     <DataContext.Provider
       value={{
         loading,
-        fabricantes,
-        setFabricantes,
         tiposCalidad,
         setTiposCalidad,
-        tiposTubos,
-        setTiposTubos,
-        maquinas,
-        setMaquinas,
         operarios,
         setOperarios,
       }}
