@@ -60,12 +60,11 @@ const SalidaTuboForm = ({ data, handleConfirm, handleCancel }) => {
   const methods = useForm({
     resolver: zodResolver(salidaSchema),
     defaultValues: {
-      operario_id: data?.operario_id || '',
-      calidad_id: data?.calidad_id || '',
-      tubo_id: data?.tubo_id || '',
+      operario_id: 0,
+      calidad_id: 0,
+      tubo_id: 0,
       num_paqs: 1,
-      fecha: data?.fecha || new Date().toISOString().split('T')[0],
-      observacion: data?.observacion || '',
+      fecha: new Date().toISOString().split('T')[0],
     },
   });
 
