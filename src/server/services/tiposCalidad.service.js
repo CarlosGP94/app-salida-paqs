@@ -1,4 +1,4 @@
-import database from "../../db/database";
+import database from '../../db/database';
 
 export async function listarTodosTiposCalidadService() {
   try {
@@ -19,6 +19,7 @@ export async function listarTodosTiposCalidadService() {
     )
     SELECT *
     FROM TiposCalidadCTE
+    ORDER BY nombre ASC
   `;
 
     const rows = await conn.query(selectQuery);
@@ -31,7 +32,7 @@ export async function listarTodosTiposCalidadService() {
       total,
     };
   } catch (error) {
-    console.error("Error listando tipos de calidad:", error.message);
+    console.error('Error listando tipos de calidad:', error.message);
     throw error;
   }
 }

@@ -77,15 +77,23 @@ export async function listarTodosTubosService({ calidad_id = null }) {
 
     const selectQuery = `
       SELECT
-        id,
-        medida,
-        creado,
-        calidad_id,
-        num_paquetes,
-        unidades
-      FROM Tubos
+        t.id,
+        t.medida,
+        t.creado,
+        t.calidad_id,
+        t.num_paquetes,
+        t.unidades
+      FROM Tubos AS t
+      LEFT JOIN Tipos_Calidad AS tc ON t.calidad_id = tc.id
+      LEFT JOIN Tipos_Tubos AS tt ON t.tipo_id = tt.id
       WHERE ${whereSQL}
-      ORDER BY creado DESC
+      ORDER BY tc.nombre,
+        t.espesor,
+        tt.nombre,
+        t.ancho,
+        t.alto,
+        t.diametro,
+        t.id ASC
     `;
 
     const rows = await conn.query(selectQuery);

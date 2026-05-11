@@ -6,7 +6,7 @@ export const listarTodosOperariosService = async () => {
     const query = `
       SELECT id, nombre, apellido1, apellido2
       FROM Operarios
-      ORDER BY nombre ASC
+      ORDER BY nombre, apellido1, apellido2 ASC
     `;
     const rows = await conn.query(query);
     return { data: rows, total: rows.length };
