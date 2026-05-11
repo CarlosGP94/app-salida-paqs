@@ -76,18 +76,16 @@ export async function listarTodosTubosService({ calidad_id = null }) {
     const total = countResult[0]?.total ? Number(countResult[0].total) : 0;
 
     const selectQuery = `
-      WITH TubosCTE AS (
-        SELECT 
-          id, 
-          medida, 
-          creado,
-          calidad_id, 
-          ROW_NUMBER() OVER (ORDER BY creado DESC) AS rn
-        FROM Tubos
-        WHERE ${whereSQL} 
-      )
-      SELECT *
-      FROM TubosCTE
+      SELECT
+        id,
+        medida,
+        creado,
+        calidad_id,
+        num_paquetes,
+        unidades
+      FROM Tubos
+      WHERE ${whereSQL}
+      ORDER BY creado DESC
     `;
 
     const rows = await conn.query(selectQuery);
@@ -98,6 +96,8 @@ export async function listarTodosTubosService({ calidad_id = null }) {
         medida: row.medida,
         creado: row.creado,
         calidad_id: row.calidad_id ? Number(row.calidad_id) : null,
+        num_paquetes: row.num_paquetes ? Number(row.num_paquetes) : null,
+        unidades: row.unidades,
       })),
       total,
     };

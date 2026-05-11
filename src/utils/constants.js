@@ -10,7 +10,7 @@ export const DB_CONFIG = {
 };
 
 // Puerto del servidor
-export const SERVER_PORT = 3000;
+export const SERVER_PORT = 3001;
 
 // Tables
 export const ROW_HEIGHT = 52;

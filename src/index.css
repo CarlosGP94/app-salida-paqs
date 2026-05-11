@@ -3,3 +3,27 @@ body {
   padding: 0;
   background-color: #f4f7fe;
 }
+
+/* 1. Tamaño de la barra */
+::-webkit-scrollbar {
+  width: 12px; /* Ancho para scroll vertical */
+  height: 12px; /* Alto para scroll horizontal */
+}
+
+/* 2. Estilo del fondo (Track) */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+/* 3. Estilo del tirador (Thumb) */
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+  border: 3px solid #f1f1f1; /* Crea un efecto de margen */
+}
+
+/* 4. Estilo al pasar el mouse (Hover) */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

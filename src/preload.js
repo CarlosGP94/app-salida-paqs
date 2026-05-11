@@ -19,5 +19,6 @@ contextBridge.exposeInMainWorld('api', {
   },
   salidasPaq: {
     getAll: (payload) => ipcRenderer.invoke('salidasPaq:getAll', payload),
+    create: (payload) => ipcRenderer.invoke('salidasPaq:create', payload),
   },
 });

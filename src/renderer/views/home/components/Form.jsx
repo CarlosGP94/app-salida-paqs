@@ -26,9 +26,10 @@ import {
 } from '@mui/icons-material';
 import TextField from '../../../components/common/Textfield';
 import Select from '../../../components/common/Select';
+import Modal from '../../../components/common/Modal';
 import { DataContext } from '../../../contexts/DataContext';
 import { toast } from 'react-toastify';
-import { z } from 'zod';
+import { set, z } from 'zod';
 
 const salidaSchema = z.object({
   id: z.number().optional(),
@@ -48,6 +49,12 @@ const salidaSchema = z.object({
   fecha: z.string().min(1, 'La fecha es obligatoria'),
 });
 
+const getLocalDateInputValue = () => {
+  const now = new Date();
+  const timezoneOffsetMs = now.getTimezoneOffset() * 60000;
+  return new Date(now.getTime() - timezoneOffsetMs).toISOString().split('T')[0];
+};
+
 const SalidaTuboForm = ({ data, handleConfirm, handleCancel }) => {
   const [tubos, setTubos] = useState([]);
   const [loadingTubos, setLoadingTubos] = useState(false);
@@ -56,6 +63,8 @@ const SalidaTuboForm = ({ data, handleConfirm, handleCancel }) => {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [totalSalidas, setTotalSalidas] = useState(0);
+  const [inventoryModalOpen, setInventoryModalOpen] = useState(false);
+  const [inventoryModalMessage, setInventoryModalMessage] = useState('');
 
   const methods = useForm({
     resolver: zodResolver(salidaSchema),
@@ -64,14 +73,40 @@ const SalidaTuboForm = ({ data, handleConfirm, handleCancel }) => {
       calidad_id: 0,
       tubo_id: 0,
       num_paqs: 1,
-      fecha: new Date().toISOString().split('T')[0],
+      fecha: getLocalDateInputValue(),
     },
   });
 
   const { handleSubmit, watch, setValue, reset } = methods;
   const watchCalidadId = watch('calidad_id');
   const watchTuboId = watch('tubo_id');
+  const watchNumPaqs = watch('num_paqs');
   const watchFecha = watch('fecha');
+
+  const validateTubeInventory = ({ shouldOpenModal = false } = {}) => {
+    if (!watchTuboId) return true;
+
+    const tuboSeleccionado = tubos.find(
+      (t) => Number(t.id) === Number(watchTuboId),
+    );
+    if (!tuboSeleccionado) return true;
+
+    const stockActual = Number(tuboSeleccionado.num_paquetes) || 0;
+    const cantidadSolicitada = Number(watchNumPaqs) || 0;
+    const restante = stockActual - cantidadSolicitada;
+
+    if (restante < 0) {
+      if (shouldOpenModal) {
+        setInventoryModalMessage(
+          `El tubo ${tuboSeleccionado.medida || tuboSeleccionado.id} no tiene inventario suficiente. Disponible: ${stockActual}, solicitado: ${cantidadSolicitada}.`,
+        );
+        setInventoryModalOpen(true);
+      }
+      return false;
+    }
+
+    return true;
+  };
 
   const loadTubos = async (calidadId) => {
     if (!calidadId) return;
@@ -141,16 +176,16 @@ const SalidaTuboForm = ({ data, handleConfirm, handleCancel }) => {
 
   const onSubmit = async (formData) => {
     try {
-      const tuboSeleccionado = tubos.find((t) => t.id === formData.tubo_id);
+      const isInventoryValid = validateTubeInventory({ shouldOpenModal: true });
+      if (!isInventoryValid) {
+        return;
+      }
 
-      const payload = {
-        ...formData,
-        medida: tuboSeleccionado?.medida, // Para emular la búsqueda por medida de Access
-        // Añadimos una bandera para que el backend sepa que debe procesar stock
-        actualizarStock: true,
-      };
+      const result = await window.api.salidasPaq.create(formData);
 
-      await handleConfirm(payload);
+      if (!result?.success) {
+        throw new Error(result?.error || 'No se pudo registrar la salida');
+      }
 
       setValue('tubo_id', '');
       setValue('num_paqs', 1);
@@ -161,15 +196,38 @@ const SalidaTuboForm = ({ data, handleConfirm, handleCancel }) => {
     }
   };
 
+  const handleConfirmInventory = async () => {
+    try {
+      setInventoryModalOpen(false);
+      const formData = {
+        operario_id: Number(watch('operario_id')),
+        calidad_id: Number(watch('calidad_id')),
+        tubo_id: Number(watch('tubo_id')),
+        num_paqs: Number(watch('num_paqs')),
+        fecha: watch('fecha'),
+      };
+      const result = await window.api.salidasPaq.create(formData);
+      console.log(
+        'Resultado de creación de salida con inventario insuficiente:',
+        result,
+      );
+      toast.success(
+        'Operación registrada correctamente a pesar de inventario insuficiente',
+      );
+      setValue('tubo_id', '');
+      setValue('num_paqs', 1);
+      await loadSalidasByFecha(formData.fecha, page, pageSize);
+    } catch (err) {
+      toast.error('Error al confirmar salida con inventario insuficiente');
+    }
+  };
+
   return (
     <FormProvider {...methods}>
       <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ p: 2 }}>
         <Grid container spacing={2}>
           <Grid size={{ xs: 12, md: 6 }}>
-            <Paper
-              variant="outlined"
-              sx={{ p: 2, bgcolor: '#f8f9fa', borderRadius: 2 }}
-            >
+            <Paper variant="outlined" sx={{ p: 2 }}>
               <Stack
                 direction="row"
                 spacing={1}
@@ -208,7 +266,7 @@ const SalidaTuboForm = ({ data, handleConfirm, handleCancel }) => {
           </Grid>
 
           <Grid size={{ xs: 12, md: 6 }}>
-            <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
+            <Paper variant="outlined" sx={{ p: 2 }}>
               <Stack
                 direction="row"
                 spacing={1}
@@ -253,7 +311,7 @@ const SalidaTuboForm = ({ data, handleConfirm, handleCancel }) => {
                   <TextField
                     size="small"
                     name="num_paqs"
-                    label="Nº Paquetes (Usar - para devolver)"
+                    label="Nº Paquetes"
                     type="number"
                     fullWidth
                   />
@@ -277,7 +335,6 @@ const SalidaTuboForm = ({ data, handleConfirm, handleCancel }) => {
             </Stack>
           </Grid>
 
-          {/* --- PARTE INFERIOR: LISTADO (El subformulario tubos_por_salidas1) --- */}
           <Grid size={{ xs: 12 }}>
             <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
               <TableContainer
@@ -311,6 +368,9 @@ const SalidaTuboForm = ({ data, handleConfirm, handleCancel }) => {
                       <TableCell sx={{ bgcolor: '#eee', fontWeight: 'bold' }}>
                         Operario
                       </TableCell>
+                      <TableCell sx={{ bgcolor: '#eee', fontWeight: 'bold' }}>
+                        Fecha
+                      </TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -319,6 +379,7 @@ const SalidaTuboForm = ({ data, handleConfirm, handleCancel }) => {
                         <TableCell>{item.medida}</TableCell>
                         <TableCell align="center">{item.num_paqs}</TableCell>
                         <TableCell>{item.nombre_operario}</TableCell>
+                        <TableCell>{item.creado}</TableCell>
                       </TableRow>
                     ))}
                     {listadoSalidas.length === 0 && (
@@ -352,6 +413,21 @@ const SalidaTuboForm = ({ data, handleConfirm, handleCancel }) => {
           </Grid>
         </Grid>
       </Box>
+
+      <Modal
+        open={inventoryModalOpen}
+        title="Inventario insuficiente"
+        showCustom
+        showCancel
+        customText="Entendido"
+        handleClose={() => setInventoryModalOpen(false)}
+        handleCancel={() => setInventoryModalOpen(false)}
+        handleCustom={() => {
+          handleConfirmInventory();
+        }}
+      >
+        <Typography>{inventoryModalMessage}</Typography>
+      </Modal>
     </FormProvider>
   );
 };
