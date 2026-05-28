@@ -126,10 +126,6 @@ export const crearSalidaPaquetes = async ({
 
     // Normalizar fecha a formato YYYY-MM-DD para SQL Server
     const fechaFormateada = formatFechaSoloDia(fecha);
-    console.log('Fechas en crearSalidaPaquetes:', {
-      fechaOriginal: fecha,
-      fechaFormateada,
-    });
 
     await conn.query(updateQuery, [
       nuevoStock,

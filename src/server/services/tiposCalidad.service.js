@@ -12,13 +12,9 @@ export async function listarTodosTiposCalidadService() {
     const total = countResult[0]?.total || 0;
 
     const selectQuery = `
-    WITH TiposCalidadCTE AS (
-      SELECT *,
-             ROW_NUMBER() OVER (ORDER BY creado) AS rn
-      FROM Tipos_calidad
-    )
     SELECT *
-    FROM TiposCalidadCTE
+    FROM Tipos_calidad
+    WHERE mostrar_tubos = 1
     ORDER BY nombre ASC
   `;
 

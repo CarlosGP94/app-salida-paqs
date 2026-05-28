@@ -45,7 +45,7 @@ const salidaSchema = z.object({
   num_paqs: z.coerce
     .number()
     .int('Debe ser un número entero')
-    .refine((val) => val !== 0, 'La cantidad no puede ser cero'),
+    .min(1, 'La cantidad tiene que ser al menos 1'),
   fecha: z.string().min(1, 'La fecha es obligatoria'),
 });
 
