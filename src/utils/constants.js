@@ -1,11 +1,11 @@
 // Configuración de bases de datos
 export const DB_CONFIG = {
   remote: {
-    server: '.\\SQLEXPRESS',
-    database: 'prod_tubos',
+    server: 'SQL\\SQLSERVERGP',
+    database: 'tubos',
     trusted: true,
-    user: 'usuariodb',
-    password: 'macero',
+    user: 'userdb',
+    password: 'Macero9542',
   },
 };
 

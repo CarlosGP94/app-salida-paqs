@@ -385,7 +385,7 @@ const SalidaTuboForm = ({ data, handleConfirm, handleCancel }) => {
                     {listadoSalidas.length === 0 && (
                       <TableRow>
                         <TableCell
-                          colSpan={3}
+                          colSpan={4}
                           align="center"
                           sx={{ py: 3, color: 'gray' }}
                         >

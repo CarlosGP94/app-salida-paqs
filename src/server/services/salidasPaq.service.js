@@ -43,24 +43,35 @@ export const listarSalidasPaq = async ({ page = 1, pageSize = 10, fecha }) => {
     const countResult = await conn.query(countQuery);
     const total = countResult[0].total;
 
+    // --- MODIFICACIÓN AQUÍ ---
+    // Usamos ISNULL(campo, '') para evitar que el operador '+' devuelva NULL
+    // si alguno de los campos de nombre es nulo.
     const query = `
-      SELECT
+    SELECT * FROM (
+      SELECT 
         MIN(sp.id) AS id,
         CAST(sp.creado AS date) AS fecha,
         sp.tubo_id,
         MAX(t.medida) AS medida,
-        MAX(LTRIM(RTRIM(CONCAT(o.nombre, ' ', o.apellido1, ' ', o.apellido2)))) AS nombre_operario,
+        MAX(LTRIM(RTRIM(
+            ISNULL(o.nombre, '') + ' ' + 
+            ISNULL(o.apellido1, '') + ' ' + 
+            ISNULL(o.apellido2, '')
+        ))) AS nombre_operario,
         SUM(sp.num_paqs) AS total_num_paqs,
         COUNT(*) AS total_registros,
-        MAX(sp.creado) AS creado
+        MAX(sp.creado) AS creado,
+        ROW_NUMBER() OVER (ORDER BY CAST(sp.creado AS date) ASC, sp.tubo_id ASC) AS RowNum
       FROM Salidas_Paqs_Tubos AS sp
       LEFT JOIN Tubos AS t ON t.id = sp.tubo_id
       LEFT JOIN Operarios AS o ON o.id = sp.operario_id
       ${whereFecha}
       GROUP BY CAST(sp.creado AS date), sp.tubo_id
-      ORDER BY fecha ASC, sp.tubo_id ASC
-      OFFSET ${offset} ROWS FETCH NEXT ${safePageSize} ROWS ONLY
-    `;
+    ) AS Paginado
+    WHERE RowNum > ${offset} AND RowNum <= ${offset + safePageSize}
+  `;
+
+    console.log('query', query);
 
     const rows = await conn.query(query);
     return {
@@ -81,7 +92,6 @@ export const listarSalidasPaq = async ({ page = 1, pageSize = 10, fecha }) => {
     throw error;
   }
 };
-
 export const crearSalidaPaquetes = async ({
   operario_id,
   tubo_id,
