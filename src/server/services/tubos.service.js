@@ -70,7 +70,7 @@ export async function listarTodosTubosService({ calidad_id = null }) {
     const countQuery = `
       SELECT COUNT(*) AS total
       FROM Tubos
-      WHERE ${whereSQL}
+      WHERE ${whereSQL} AND activo = 1
     `;
     const countResult = await conn.query(countQuery);
     const total = countResult[0]?.total ? Number(countResult[0].total) : 0;
@@ -86,7 +86,7 @@ export async function listarTodosTubosService({ calidad_id = null }) {
       FROM Tubos AS t
       LEFT JOIN Tipos_Calidad AS tc ON t.calidad_id = tc.id
       LEFT JOIN Tipos_Tubos AS tt ON t.tipo_id = tt.id
-      WHERE ${whereSQL}
+      WHERE ${whereSQL} AND activo = 1
       ORDER BY tc.nombre,
         t.espesor,
         tt.nombre,

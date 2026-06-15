@@ -207,10 +207,6 @@ const SalidaTuboForm = ({ data, handleConfirm, handleCancel }) => {
         fecha: watch('fecha'),
       };
       const result = await window.api.salidasPaq.create(formData);
-      console.log(
-        'Resultado de creación de salida con inventario insuficiente:',
-        result,
-      );
       toast.success(
         'Operación registrada correctamente a pesar de inventario insuficiente',
       );
@@ -339,7 +335,10 @@ const SalidaTuboForm = ({ data, handleConfirm, handleCancel }) => {
             <Paper variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
               <TableContainer
                 variant="outlined"
-                sx={{ height: 350, width: '99%' }}
+                sx={{
+                  height: listadoSalidas.length !== 0 ? 400 : 200,
+                  width: '99%',
+                }}
               >
                 <Stack
                   direction="row"
