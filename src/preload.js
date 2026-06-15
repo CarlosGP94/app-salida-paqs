@@ -21,4 +21,7 @@ contextBridge.exposeInMainWorld('api', {
     getAll: (payload) => ipcRenderer.invoke('salidasPaq:getAll', payload),
     create: (payload) => ipcRenderer.invoke('salidasPaq:create', payload),
   },
+  actions: {
+    cerrarPrograma: () => ipcRenderer.invoke('cerrar-app'),
+  },
 });
