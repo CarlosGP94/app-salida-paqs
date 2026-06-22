@@ -71,8 +71,6 @@ export const listarSalidasPaq = async ({ page = 1, pageSize = 10, fecha }) => {
     WHERE RowNum > ${offset} AND RowNum <= ${offset + safePageSize}
   `;
 
-    console.log('query', query);
-
     const rows = await conn.query(query);
     return {
       data: rows.map((row) => ({
@@ -119,13 +117,28 @@ export const crearSalidaPaquetes = async ({
     }
 
     const tubo = tubos[0];
-    const stockActual = Number(tubo.num_paquetes) || 0;
-    const numPorPaq = Number(tubo.num_por_paq) || 0;
-    const nuevoStock = stockActual - cantidadSalida;
-    const pesoUnit = Number(tubo.peso_unitario) || 0;
+    console.log('tubo', tubo.id);
 
-    const nuevasUnidades = nuevoStock * numPorPaq;
-    const pesoTotalActual = nuevasUnidades * pesoUnit;
+    // Convertimos y aseguramos los decimales desde el inicio si es necesario
+    const stockActual = Number(Number(tubo.num_paquetes || 0).toFixed(3));
+    console.log('stockActual', stockActual);
+
+    const numPorPaq = Number(Number(tubo.num_por_paq || 0).toFixed(3));
+    console.log('numPorPaq', numPorPaq);
+
+    // Cálculo de stock regulado
+    const nuevoStock = Number((stockActual - cantidadSalida).toFixed(3));
+    console.log('nuevoStock', nuevoStock);
+
+    const pesoUnit = Number(Number(tubo.peso_unitario || 0).toFixed(3));
+    console.log('pesoUnit', pesoUnit);
+
+    // Cálculos finales regulados a 3 decimales
+    const nuevasUnidades = Number((nuevoStock * numPorPaq).toFixed(3));
+    console.log('nuevasUnidades', nuevasUnidades);
+
+    const pesoTotalActual = Number((nuevasUnidades * pesoUnit).toFixed(3));
+    console.log('pesoTotalActual', pesoTotalActual);
     const updateQuery = `
       UPDATE Tubos
       SET num_paquetes = ?,

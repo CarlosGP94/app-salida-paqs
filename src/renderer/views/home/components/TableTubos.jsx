@@ -359,7 +359,7 @@ const getColumns = (handleDetail = () => {}) => [
       >
         <Typography variant="body2" fontWeight={500}>
           {params?.row?.num_paquetes
-            ? params?.row?.num_paquetes.toFixed(2)
+            ? params?.row?.num_paquetes.toFixed(3)
             : '0'}
         </Typography>
       </Stack>
@@ -381,7 +381,7 @@ const getColumns = (handleDetail = () => {}) => [
       >
         <Typography variant="body2" fontWeight={500}>
           {params?.row?.peso_unitario
-            ? params?.row?.peso_unitario.toFixed(2)
+            ? params?.row?.peso_unitario.toFixed(3)
             : '0'}
         </Typography>
       </Stack>
@@ -402,7 +402,7 @@ const getColumns = (handleDetail = () => {}) => [
         justifyContent="center"
       >
         <Typography variant="body2" fontWeight={500}>
-          {params?.row?.peso_total ? params?.row?.peso_total.toFixed(2) : '0'}
+          {params?.row?.peso_total ? params?.row?.peso_total.toFixed(3) : '0'}
         </Typography>
       </Stack>
     ),
