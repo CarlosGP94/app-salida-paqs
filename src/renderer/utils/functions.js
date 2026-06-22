@@ -54,7 +54,7 @@ export const getImagePath = (image = '') => {
 
 export const resolveSortParams = (model = [], sortFieldMap) => {
   const currentSort = model[0];
-  const safeField = currentSort?.field || 'creado';
+  const safeField = currentSort?.field || '';
   const mappedField = sortFieldMap[safeField] || safeField;
   const safeDir = currentSort?.sort === 'asc' ? 'ASC' : 'DESC';
 

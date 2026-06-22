@@ -16,6 +16,7 @@ contextBridge.exposeInMainWorld('api', {
   tubos: {
     getAllForSelects: (payload) =>
       ipcRenderer.invoke('tubos:getAllForSelects', payload),
+    getTubos: (payload) => ipcRenderer.invoke('tubos:getTubos', payload),
   },
   salidasPaq: {
     getAll: (payload) => ipcRenderer.invoke('salidasPaq:getAll', payload),

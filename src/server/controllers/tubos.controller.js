@@ -18,6 +18,15 @@ const tubosController = {
       return { success: false, error: error.message };
     }
   },
+  async getTubos(_, payload) {
+    try {
+      const { data, total } = await listarTubosService(payload);
+      return { success: true, data: data, total: total };
+    } catch (error) {
+      console.error('Error en tubosController.getTubos:', error);
+      return { success: false, error: error.message };
+    }
+  },
 };
 
 export default tubosController;

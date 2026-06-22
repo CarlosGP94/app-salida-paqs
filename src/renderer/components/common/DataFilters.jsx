@@ -5,17 +5,18 @@ import {
   FormControl,
   InputLabel,
   MenuItem,
+  Paper,
   Select,
   TextField,
-} from "@mui/material";
-import { flexEnd, flexSpaceBetween } from "../../utils/styles";
-import SearchTextfield from "./SearchTextfied";
-import React from "react";
-import FilterAltOffIcon from "@mui/icons-material/FilterAltOff";
+} from '@mui/material';
+import { flexEnd, flexSpaceBetween } from '../../utils/styles';
+import SearchTextfield from './SearchTextfied';
+import React from 'react';
+import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 
 const DataFilters = ({
   sx = {},
-  searchTerm = "",
+  searchTerm = '',
   hiddenSearch = false,
   filters = [],
   loading = false,
@@ -23,7 +24,10 @@ const DataFilters = ({
   handleCleanFilters = () => {},
 }) => {
   return (
-    <Card sx={{ py: 1.5, px: 1, ...flexSpaceBetween, ...sx }}>
+    <Paper
+      variant="outlined"
+      sx={{ py: 1.5, px: 1, ...flexSpaceBetween, ...sx }}
+    >
       <Box>
         {!hiddenSearch && (
           <SearchTextfield
@@ -31,7 +35,7 @@ const DataFilters = ({
             loading={loading}
             searchTerm={searchTerm}
             handleChange={(value) => {
-              handleFilterChange("search", value);
+              handleFilterChange('search', value);
             }}
           />
         )}
@@ -39,9 +43,9 @@ const DataFilters = ({
       <Box sx={flexEnd}>
         {filters.map(
           (filter, index) =>
-            filter.type !== "search" && (
+            filter.type !== 'search' && (
               <Box key={filter.name + index}>
-                {filter.type === "select" && (
+                {filter.type === 'select' && (
                   <FormControl
                     sx={{ minWidth: filter?.minWidth ? filter?.minWidth : 120 }}
                     disabled={loading}
@@ -52,9 +56,9 @@ const DataFilters = ({
                     <Select
                       labelId={`${filter.name}-label`}
                       id={`${filter.name}-select`}
-                      name={filter?.name || ""}
-                      value={filter?.value || ""}
-                      label={filter?.label || ""}
+                      name={filter?.name || ''}
+                      value={filter?.value || ''}
+                      label={filter?.label || ''}
                       onChange={(e) => {
                         handleFilterChange(filter.name, e.target.value);
                       }}
@@ -81,13 +85,13 @@ const DataFilters = ({
                   </FormControl>
                 )}
               </Box>
-            )
+            ),
         )}
         {filters.length > 0 && (
           <Button
             variant="contained"
             size="small"
-            color={"primary"}
+            color={'primary'}
             startIcon={<FilterAltOffIcon />}
             onClick={handleCleanFilters}
           >
@@ -95,7 +99,7 @@ const DataFilters = ({
           </Button>
         )}
       </Box>
-    </Card>
+    </Paper>
   );
 };
 
